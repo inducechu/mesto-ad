@@ -8,8 +8,6 @@
 
 import { createCardElement, deleteCard, likeCard } from "./components/card.js";
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js";
-
-// DOM узлы
 import { enableValidation, clearValidation } from "./components/validation.js";
 import { getUserInfo, getCardList, setUserInfo, setAvatar, addCard, removeCardServer, changeLikeCardStatus } from "./components/api.js";
 
@@ -25,6 +23,8 @@ const validationSettings = {
 let currentUserId = "";
 
 const placesWrap = document.querySelector(".places__list");
+const logoButton = document.querySelector(".header__logo");
+
 const profileFormModalWindow = document.querySelector(".popup_type_edit");
 const profileForm = profileFormModalWindow.querySelector(".popup__form");
 const profileTitleInput = profileForm.querySelector(".popup__input_type_name");
@@ -49,6 +49,31 @@ const profileAvatar = document.querySelector(".profile__image");
 const avatarFormModalWindow = document.querySelector(".popup_type_edit-avatar");
 const avatarForm = avatarFormModalWindow.querySelector(".popup__form");
 const avatarInput = avatarForm.querySelector(".popup__input");
+
+const statsModalWindow = document.querySelector(".popup_type_info");
+const statsContainer = statsModalWindow.querySelector(".popup__stats-container");
+const definitionTemplate = document.getElementById("popup-info-definition-template");
+const userPreviewTemplate = document.getElementById("popup-info-user-preview-template");
+
+const formatDate = (date) =>
+  date.toLocaleDateString("ru-RU", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+const createInfoString = (title, value) => {
+  const templateClone = definitionTemplate.content.cloneNode(true);
+  templateClone.querySelector(".popup__info-title").textContent = title;
+  templateClone.querySelector(".popup__info-value").textContent = value;
+  return templateClone;
+};
+
+const createUserBadge = (name) => {
+  const templateClone = userPreviewTemplate.content.cloneNode(true);
+  templateClone.querySelector(".popup__info-user-badge").textContent = name;
+  return templateClone;
+};
 
 const renderLoading = (isLoading, buttonElement, defaultText = "Сохранить") => {
   if (isLoading) {
@@ -83,6 +108,64 @@ const handleDeleteCard = (cardElement, cardId) => {
     })
     .catch((err) => {
       console.log(err);
+    });
+};
+
+const handleLogoClick = () => {
+  getCardList()
+    .then((cards) => {
+      statsContainer.innerHTML = "";
+
+      if (!cards || cards.length === 0) {
+        statsContainer.append(createInfoString("Всего карточек:", "0"));
+        openModalWindow(statsModalWindow);
+        return;
+      }
+
+      const totalCards = cards.length;
+
+      const sortedCards = [...cards].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      const firstCreated = formatDate(new Date(sortedCards[0].createdAt));
+      const lastCreated = formatDate(new Date(sortedCards[sortedCards.length - 1].createdAt));
+
+      const userCardsCountMap = {};
+      const userNamesMap = {};
+
+      cards.forEach((card) => {
+        const ownerId = card.owner._id;
+        userCardsCountMap[ownerId] = (userCardsCountMap[ownerId] || 0) + 1;
+        userNamesMap[ownerId] = card.owner.name;
+      });
+
+      const totalUsers = Object.keys(userCardsCountMap).length;
+      const maxCardsFromOne = Math.max(...Object.values(userCardsCountMap));
+
+      statsContainer.append(createInfoString("Всего карточек:", String(totalCards)));
+      statsContainer.append(createInfoString("Первая создана:", firstCreated));
+      statsContainer.append(createInfoString("Последняя создана:", lastCreated));
+      statsContainer.append(createInfoString("Всего пользователей:", String(totalUsers)));
+      statsContainer.append(createInfoString("Максимум карточек от одного:", String(maxCardsFromOne)));
+
+      const subtitleElement = document.createElement("h4");
+      subtitleElement.className = "popup__info-subtitle";
+      subtitleElement.style.cssText = "margin: 15px 0 10px; font-size: 14px; color: #000;";
+      subtitleElement.textContent = "Все пользователи:";
+      statsContainer.append(subtitleElement);
+
+      const usersListWrapper = document.createElement("div");
+      usersListWrapper.className = "popup__info-users-list";
+      usersListWrapper.style.cssText = "display: flex; flex-wrap: wrap; gap: 6px;";
+
+      Object.values(userNamesMap).forEach((name) => {
+        usersListWrapper.append(createUserBadge(name));
+      });
+
+      statsContainer.append(usersListWrapper);
+
+      openModalWindow(statsModalWindow);
+    })
+    .catch((err) => {
+      console.log("Ошибка загрузки статистики:", err);
     });
 };
 
@@ -158,6 +241,8 @@ const handleCardFormSubmit = (evt) => {
 profileForm.addEventListener("submit", handleProfileFormSubmit);
 cardForm.addEventListener("submit", handleCardFormSubmit);
 avatarForm.addEventListener("submit", handleAvatarFormSubmit);
+
+logoButton.addEventListener("click", handleLogoClick);
 
 openProfileFormButton.addEventListener("click", () => {
   profileTitleInput.value = profileTitle.textContent;

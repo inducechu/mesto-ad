@@ -7,14 +7,14 @@
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Mesto</title>
-  <script type="module" crossorigin src="/assets/index-CDXBwROY.js"></script>
+  <script type="module" crossorigin src="/assets/index-Cw8GnfCR.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-DkiXW1re.css">
 </head>
 
 <body class="page">
   <div class="page__content">
     <header class="header page__section">
-      <img src="/assets/logo-DQ1BIEMY.svg" alt="Логотип проекта место" class="logo header__logo" />
+      <img src="/assets/logo-DQ1BIEMY.svg" alt="Логотип проекта место" class="logo header__logo" style="cursor: pointer;" />
     </header>
     <main class="content">
       <section class="profile page__section">
@@ -105,8 +105,28 @@
         </form>
       </div>
     </div>
+
+    <div class="popup popup_type_info">
+      <div class="popup__content">
+        <button type="button" class="popup__close"></button>
+        <h3 class="popup__title" style="margin-bottom: 20px;">Статистика пользователей</h3>
+        <div class="popup__stats-container"></div>
+      </div>
+    </div>
   </div>
 
+
+  <template id="popup-info-definition-template">
+    <div class="popup__info-list-item" style="display: flex; gap: 10px; margin-bottom: 8px; font-size: 14px;">
+      <b class="popup__info-title" style="background: #eee; color: #000; padding: 2px 6px; border-radius: 2px;"></b>
+      <span class="popup__info-value" style="color: #000;"></span>
+    </div>
+  </template>
+
+  <template id="popup-info-user-preview-template">
+    <span class="popup__info-user-badge"
+      style="background: #ccc; color: #000; padding: 4px 8px; border-radius: 2px; font-size: 12px; font-weight: bold;"></span>
+  </template>
 
   <template id="card-template">
     <li class="places__item card">

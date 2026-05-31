@@ -1,2 +1,2 @@
 Deploy to Public Pages Repository
-https://github.com/inducechu/mesto-production
+https://inducechu.github.io/mesto-production/

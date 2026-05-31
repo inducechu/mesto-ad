@@ -7,6 +7,10 @@ export const deleteCard = (cardElement) => {
   cardElement.remove();
 };
 
+export const isCardLiked = (likeButton) => {
+  return likeButton.classList.contains("card__like-button_is-active");
+};
+
 const getTemplate = () => {
   return document
     .getElementById("card-template")

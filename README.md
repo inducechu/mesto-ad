@@ -1,5 +1,2 @@
-Стартовый набор для выполнения проектной работы Место
-
-Для запуска приложения необходимо использовать live-server
-![изображение live-server](image.png)
-Live-server является расширением VSCode
+Deploy to Public Pages Repository
+https://github.com/inducechu/mesto-production
